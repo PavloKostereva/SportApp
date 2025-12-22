@@ -1,15 +1,8 @@
-import { useUser } from '@/contexts/user-context';
 import { Redirect } from 'expo-router';
-import { useEffect } from 'react';
+import { useUser } from '@/contexts/user-context';
 
 export default function Index() {
   const { userData } = useUser();
-
-  useEffect(() => {
-    if (!userData.hasCompletedOnboarding) {
-      // Redirect will be handled by layout
-    }
-  }, [userData.hasCompletedOnboarding]);
 
   if (!userData.hasCompletedOnboarding) {
     return <Redirect href="/onboarding" />;
@@ -17,3 +10,4 @@ export default function Index() {
 
   return <Redirect href="/(tabs)/exercises" />;
 }
+

@@ -1,7 +1,7 @@
 // Fallback for using MaterialIcons on Android and web.
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
+import { SymbolViewProps, SymbolWeight } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
@@ -18,6 +18,37 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'figure.strengthtraining.traditional': 'fitness-center',
+  'flame.fill': 'local-fire-department',
+  'chart.line.uptrend.xyaxis': 'trending-up',
+  'person.fill': 'person',
+  'person.circle.fill': 'account-circle',
+  'star.fill': 'star',
+  'trophy.fill': 'emoji-events',
+  'medal.fill': 'military-tech',
+  'sunrise.fill': 'wb-sunny',
+  'sun.max.fill': 'wb-sunny',
+  'moon.fill': 'nightlight-round',
+  'figure.run': 'directions-run',
+  'bell.fill': 'notifications',
+  'speaker.wave.2.fill': 'volume-up',
+  'ruler.fill': 'straighten',
+  'info.circle.fill': 'info',
+  'paintbrush.fill': 'brush',
+  'questionmark.circle.fill': 'help',
+  'envelope.fill': 'email',
+  'lock.shield.fill': 'lock',
+  'gearshape.fill': 'settings',
+  target: 'gps-fixed',
+  'heart.fill': 'favorite',
+  'arrow.down.circle.fill': 'download',
+  'arrow.up.circle.fill': 'upload',
+  'icloud.fill': 'cloud',
+  'key.fill': 'vpn-key',
+  'chart.bar.fill': 'bar-chart',
+  globe: 'language',
+  'arrow.clockwise': 'refresh',
+  'equal.circle.fill': 'drag-handle',
 } as IconMapping;
 
 /**
