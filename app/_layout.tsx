@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import { ExercisesProvider } from '@/contexts/exercises-context';
 import { ThemeProvider, useTheme } from '@/contexts/theme-context';
 import { UserProvider, useUser } from '@/contexts/user-context';
 
@@ -45,7 +46,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <UserProvider>
-        <RootLayoutNav />
+        <ExercisesProvider>
+          <RootLayoutNav />
+        </ExercisesProvider>
       </UserProvider>
     </ThemeProvider>
   );

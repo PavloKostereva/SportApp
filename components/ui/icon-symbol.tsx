@@ -49,6 +49,13 @@ const MAPPING = {
   globe: 'language',
   'arrow.clockwise': 'refresh',
   'equal.circle.fill': 'drag-handle',
+  'plus.circle.fill': 'add-circle',
+  'checkmark.circle.fill': 'check-circle',
+  'xmark.circle.fill': 'cancel',
+  pencil: 'edit',
+  'trash.fill': 'delete',
+  timer: 'timer',
+  'list.bullet': 'list',
 } as IconMapping;
 
 /**
