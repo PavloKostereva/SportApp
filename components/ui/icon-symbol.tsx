@@ -56,6 +56,7 @@ const MAPPING = {
   'trash.fill': 'delete',
   timer: 'timer',
   'list.bullet': 'list',
+  'arrow.triangle.2.circlepath': 'swap-horiz',
 } as IconMapping;
 
 /**

@@ -6,7 +6,7 @@ import { Fonts } from '@/constants/theme';
 import { Exercise, useExercises } from '@/contexts/exercises-context';
 import { useWorkoutDays, WorkoutDay } from '@/contexts/workout-days-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 type ExerciseCategory = Exercise['category'];
@@ -44,7 +44,15 @@ export default function ExercisesScreen() {
   const [showDayModal, setShowDayModal] = useState(false);
   const [showAddExerciseToDayModal, setShowAddExerciseToDayModal] = useState(false);
   const [showEditDayModal, setShowEditDayModal] = useState(false);
+  const [showWorkoutMode, setShowWorkoutMode] = useState(false);
+  const [showReplaceExerciseModal, setShowReplaceExerciseModal] = useState(false);
+  const [exerciseToReplace, setExerciseToReplace] = useState<Exercise | null>(null);
   const [editingDayName, setEditingDayName] = useState('');
+  const [restTimer, setRestTimer] = useState<number | null>(null);
+  const [startTimer, setStartTimer] = useState<number | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [completedSets, setCompletedSets] = useState<Record<string, number>>({});
+  const [workoutStarted, setWorkoutStarted] = useState(false);
   const [newExercise, setNewExercise] = useState({
     name: '',
     category: 'chest' as ExerciseCategory,
@@ -63,9 +71,6 @@ export default function ExercisesScreen() {
     'core',
     'cardio',
   ];
-
-  const filteredExercises =
-    selectedCategory === 'all' ? exercises : getExercisesByCategory(selectedCategory);
 
   const handleAddExercise = async () => {
     if (!newExercise.name || !newExercise.sets || !newExercise.reps) {
@@ -140,6 +145,80 @@ export default function ExercisesScreen() {
       restTime: exercise.restTime?.toString() || '60',
     });
   };
+
+  const restTimerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (startTimer !== null && startTimer > 0) {
+      startTimerIntervalRef.current = setInterval(() => {
+        setStartTimer((prev) => {
+          if (prev === null || prev <= 1) {
+            if (startTimerIntervalRef.current) {
+              clearInterval(startTimerIntervalRef.current);
+            }
+            setWorkoutStarted(true);
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (startTimerIntervalRef.current) {
+        clearInterval(startTimerIntervalRef.current);
+      }
+    }
+
+    return () => {
+      if (startTimerIntervalRef.current) {
+        clearInterval(startTimerIntervalRef.current);
+      }
+    };
+  }, [startTimer]);
+
+  useEffect(() => {
+    if (restTimer !== null && restTimer > 0) {
+      restTimerIntervalRef.current = setInterval(() => {
+        setRestTimer((prev) => {
+          if (prev === null || prev <= 1) {
+            if (restTimerIntervalRef.current) {
+              clearInterval(restTimerIntervalRef.current);
+            }
+            if (selectedDay) {
+              const dayExercises = getDayExercises(selectedDay.id, exercises);
+              const currentExercise = dayExercises[currentExerciseIndex];
+              const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
+
+              if (selectedDay) {
+                const dayExercises = getDayExercises(selectedDay.id, exercises);
+                const currentExercise = dayExercises[currentExerciseIndex];
+                const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
+
+                if (currentExercise && currentCompletedSets >= currentExercise.sets) {
+                  if (currentExerciseIndex < dayExercises.length - 1) {
+                    setCurrentExerciseIndex((prev) => prev + 1);
+                    setCompletedSets((prev) => ({ ...prev, [currentExercise.id]: 0 }));
+                  }
+                }
+              }
+            }
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (restTimerIntervalRef.current) {
+        clearInterval(restTimerIntervalRef.current);
+      }
+    }
+
+    return () => {
+      if (restTimerIntervalRef.current) {
+        clearInterval(restTimerIntervalRef.current);
+      }
+    };
+  }, [restTimer, selectedDay, currentExerciseIndex, exercises, completedSets, getDayExercises]);
 
   return (
     <>
@@ -225,7 +304,7 @@ export default function ExercisesScreen() {
                         ))}
                         {dayExercises.length > 3 && (
                           <ThemedText style={styles.dayMoreExercises}>
-                            +{dayExercises.length - 3} ще
+                            +{String(dayExercises.length - 3)} ще
                           </ThemedText>
                         )}
                       </ThemedView>
@@ -355,13 +434,27 @@ export default function ExercisesScreen() {
                               </ThemedText>
                             </ThemedView>
                             {!selectedDay.completed && (
-                              <TouchableOpacity
-                                style={styles.removeExerciseButton}
-                                onPress={async () => {
-                                  await removeExerciseFromDay(selectedDay.id, exercise.id);
-                                }}>
-                                <IconSymbol size={20} name="trash.fill" color="#FF6B6B" />
-                              </TouchableOpacity>
+                              <ThemedView style={styles.exerciseActionsRow}>
+                                <TouchableOpacity
+                                  style={styles.replaceExerciseButton}
+                                  onPress={() => {
+                                    setExerciseToReplace(exercise);
+                                    setShowReplaceExerciseModal(true);
+                                  }}>
+                                  <IconSymbol
+                                    size={20}
+                                    name="arrow.triangle.2.circlepath"
+                                    color={iconColor}
+                                  />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={styles.removeExerciseButton}
+                                  onPress={async () => {
+                                    await removeExerciseFromDay(selectedDay.id, exercise.id);
+                                  }}>
+                                  <IconSymbol size={20} name="trash.fill" color="#FF6B6B" />
+                                </TouchableOpacity>
+                              </ThemedView>
                             )}
                           </ThemedView>
                           <ThemedView style={styles.exerciseDetails}>
@@ -401,6 +494,23 @@ export default function ExercisesScreen() {
                 <ThemedView style={styles.dayModalActions}>
                   {!selectedDay.completed ? (
                     <>
+                      {getDayExercises(selectedDay.id, exercises).length > 0 && (
+                        <TouchableOpacity
+                          style={[styles.startWorkoutButton, { backgroundColor: tintColor }]}
+                          onPress={() => {
+                            setShowWorkoutMode(true);
+                            setCurrentExerciseIndex(0);
+                            setCompletedSets({});
+                            setRestTimer(null);
+                            setStartTimer(3);
+                            setWorkoutStarted(false);
+                          }}>
+                          <IconSymbol size={24} name="figure.run" color="#fff" />
+                          <ThemedText style={styles.startWorkoutButtonText}>
+                            Почати тренування
+                          </ThemedText>
+                        </TouchableOpacity>
+                      )}
                       <TouchableOpacity
                         style={[styles.addExerciseToDayButton, { borderColor: tintColor }]}
                         onPress={() => setShowAddExerciseToDayModal(true)}>
@@ -501,6 +611,274 @@ export default function ExercisesScreen() {
                     </ThemedText>
                   </ThemedView>
                 )}
+            </ScrollView>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
+
+      {/* Режим активного тренування */}
+      <Modal
+        visible={showWorkoutMode && selectedDay !== null}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={() => {
+          Alert.alert(
+            'Завершити тренування?',
+            'Ви впевнені, що хочете вийти з режиму тренування?',
+            [
+              { text: 'Скасувати', style: 'cancel' },
+              {
+                text: 'Вийти',
+                style: 'destructive',
+                onPress: () => {
+                  setShowWorkoutMode(false);
+                  setRestTimer(null);
+                  setStartTimer(null);
+                  setCurrentExerciseIndex(0);
+                  setCompletedSets({});
+                  setWorkoutStarted(false);
+                },
+              },
+            ],
+          );
+        }}>
+        {selectedDay &&
+          (() => {
+            const dayExercises = getDayExercises(selectedDay.id, exercises);
+            const currentExercise = dayExercises[currentExerciseIndex];
+            const isLastExercise = currentExerciseIndex === dayExercises.length - 1;
+            const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
+            const isExerciseComplete =
+              currentExercise && currentCompletedSets >= currentExercise.sets;
+
+            return (
+              <ThemedView style={styles.workoutModeContainer}>
+                <ThemedView style={styles.workoutHeader}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert('Завершити тренування?', 'Ви впевнені, що хочете вийти?', [
+                        { text: 'Скасувати', style: 'cancel' },
+                        {
+                          text: 'Вийти',
+                          style: 'destructive',
+                          onPress: () => {
+                            setShowWorkoutMode(false);
+                            setRestTimer(null);
+                            setStartTimer(null);
+                            setWorkoutStarted(false);
+                          },
+                        },
+                      ]);
+                    }}>
+                    <IconSymbol size={24} name="xmark.circle.fill" color={iconColor} />
+                  </TouchableOpacity>
+                  <ThemedText type="title" style={styles.workoutTitle}>
+                    {selectedDay.name}
+                  </ThemedText>
+                  <ThemedView style={styles.workoutProgress}>
+                    <ThemedText style={styles.workoutProgressText}>
+                      {currentExerciseIndex + 1} / {dayExercises.length}
+                    </ThemedText>
+                  </ThemedView>
+                </ThemedView>
+
+                {startTimer !== null && startTimer > 0 ? (
+                  <ThemedView style={styles.startTimerContainer}>
+                    <ThemedText type="title" style={styles.startTimerLabel}>
+                      Готовність
+                    </ThemedText>
+                    <ThemedText type="title" style={[styles.startTimerValue, { color: tintColor }]}>
+                      {startTimer}
+                    </ThemedText>
+                  </ThemedView>
+                ) : workoutStarted && currentExercise ? (
+                  <>
+                    {restTimer !== null && restTimer > 0 && (
+                      <ThemedView style={styles.restTimerBar}>
+                        <ThemedView style={styles.restTimerBarContent}>
+                          <IconSymbol size={20} name="timer" color={tintColor} />
+                          <ThemedText style={[styles.restTimerBarText, { color: tintColor }]}>
+                            Відпочинок: {Math.floor(restTimer / 60)}:
+                            {(restTimer % 60).toString().padStart(2, '0')}
+                          </ThemedText>
+                          <TouchableOpacity
+                            style={[styles.skipRestBarButton, { backgroundColor: tintColor }]}
+                            onPress={() => setRestTimer(null)}>
+                            <ThemedText style={styles.skipRestBarButtonText}>Пропустити</ThemedText>
+                          </TouchableOpacity>
+                        </ThemedView>
+                      </ThemedView>
+                    )}
+                    <ScrollView style={styles.workoutContent}>
+                      <ThemedView style={styles.workoutExerciseCard}>
+                        <ThemedText type="title" style={styles.workoutExerciseName}>
+                          {currentExercise.name}
+                        </ThemedText>
+                        <ThemedText style={styles.workoutExerciseCategory}>
+                          {getCategoryName(currentExercise.category)}
+                        </ThemedText>
+
+                        <ThemedView style={styles.workoutSetsInfo}>
+                          <ThemedText style={styles.workoutSetsLabel}>
+                            Підхід {currentCompletedSets + 1} з {currentExercise.sets}
+                          </ThemedText>
+                          <ThemedText style={styles.workoutRepsLabel}>
+                            {currentExercise.reps} повторень
+                            {currentExercise.weight ? ` × ${currentExercise.weight} кг` : ''}
+                          </ThemedText>
+                        </ThemedView>
+
+                        <ThemedView style={styles.workoutSetsProgress}>
+                          {Array.from({ length: currentExercise.sets }).map((_, index) => (
+                            <ThemedView
+                              key={index}
+                              style={[
+                                styles.workoutSetDot,
+                                index < currentCompletedSets && { backgroundColor: tintColor },
+                              ]}
+                            />
+                          ))}
+                        </ThemedView>
+
+                        <TouchableOpacity
+                          style={[styles.completeSetButton, { backgroundColor: tintColor }]}
+                          onPress={() => {
+                            const newCompletedSets = {
+                              ...completedSets,
+                              [currentExercise.id]: currentCompletedSets + 1,
+                            };
+                            setCompletedSets(newCompletedSets);
+
+                            if (currentCompletedSets + 1 >= currentExercise.sets) {
+                              if (isLastExercise) {
+                                Alert.alert('Вітаємо!', 'Ви завершили всі вправи!', [
+                                  {
+                                    text: 'Завершити тренування',
+                                    onPress: async () => {
+                                      await markDayAsCompleted(selectedDay.id);
+                                      setShowWorkoutMode(false);
+                                      setShowDayModal(false);
+                                      setSelectedDay(null);
+                                      setRestTimer(null);
+                                      setStartTimer(null);
+                                      setCurrentExerciseIndex(0);
+                                      setCompletedSets({});
+                                      setWorkoutStarted(false);
+                                    },
+                                  },
+                                ]);
+                              } else {
+                                const restTime = currentExercise.restTime || 60;
+                                setRestTimer(restTime);
+                              }
+                            } else {
+                              const restTime = currentExercise.restTime || 60;
+                              setRestTimer(restTime);
+                            }
+                          }}>
+                          <ThemedText style={styles.completeSetButtonText}>
+                            {currentCompletedSets >= currentExercise.sets
+                              ? 'Завершити вправу'
+                              : 'Завершити підхід'}
+                          </ThemedText>
+                        </TouchableOpacity>
+                      </ThemedView>
+                    </ScrollView>
+                  </>
+                ) : workoutStarted ? (
+                  <ThemedView style={styles.workoutComplete}>
+                    <IconSymbol size={80} name="checkmark.circle.fill" color="#4CAF50" />
+                    <ThemedText type="title" style={styles.workoutCompleteText}>
+                      Тренування завершено!
+                    </ThemedText>
+                    <TouchableOpacity
+                      style={[styles.finishWorkoutButton, { backgroundColor: tintColor }]}
+                      onPress={async () => {
+                        await markDayAsCompleted(selectedDay.id);
+                        setShowWorkoutMode(false);
+                        setShowDayModal(false);
+                        setSelectedDay(null);
+                        setRestTimer(null);
+                        setStartTimer(null);
+                        setCurrentExerciseIndex(0);
+                        setCompletedSets({});
+                        setWorkoutStarted(false);
+                      }}>
+                      <ThemedText style={styles.finishWorkoutButtonText}>Готово</ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
+                ) : null}
+              </ThemedView>
+            );
+          })()}
+      </Modal>
+
+      {/* Модальне вікно заміни вправи */}
+      <Modal
+        visible={showReplaceExerciseModal && exerciseToReplace !== null && selectedDay !== null}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowReplaceExerciseModal(false)}>
+        <ThemedView style={styles.modalOverlay}>
+          <ThemedView style={[styles.modalContent, { borderWidth: 1 }]}>
+            <ThemedView style={styles.modalHeader}>
+              <ThemedText type="title" style={styles.modalTitle}>
+                Замінити "{exerciseToReplace?.name}"
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowReplaceExerciseModal(false)}>
+                <IconSymbol size={24} name="xmark.circle.fill" color={iconColor} />
+              </TouchableOpacity>
+            </ThemedView>
+
+            <ScrollView style={styles.exercisesList}>
+              {exercises
+                .filter(
+                  (ex) =>
+                    selectedDay &&
+                    ex.id !== exerciseToReplace?.id &&
+                    !selectedDay.exercises.includes(ex.id),
+                )
+                .map((exercise) => (
+                  <TouchableOpacity
+                    key={exercise.id}
+                    style={styles.exerciseSelectCard}
+                    onPress={async () => {
+                      if (selectedDay && exerciseToReplace) {
+                        await removeExerciseFromDay(selectedDay.id, exerciseToReplace.id);
+                        await addExerciseToDay(selectedDay.id, exercise.id);
+                        setShowReplaceExerciseModal(false);
+                        setExerciseToReplace(null);
+                      }
+                    }}>
+                    <ThemedView style={styles.exerciseSelectHeader}>
+                      <IconSymbol
+                        size={32}
+                        name="figure.strengthtraining.traditional"
+                        color={iconColor}
+                        style={styles.exerciseIcon}
+                      />
+                      <ThemedView style={styles.exerciseSelectInfo}>
+                        <ThemedText type="defaultSemiBold" style={styles.exerciseName}>
+                          {exercise.name || ''}
+                        </ThemedText>
+                        <ThemedText style={styles.exerciseCategory}>
+                          {getCategoryName(exercise.category) || ''}
+                        </ThemedText>
+                      </ThemedView>
+                      <IconSymbol size={24} name="arrow.triangle.2.circlepath" color={tintColor} />
+                    </ThemedView>
+                  </TouchableOpacity>
+                ))}
+              {exercises.filter(
+                (ex) =>
+                  selectedDay &&
+                  ex.id !== exerciseToReplace?.id &&
+                  !selectedDay.exercises.includes(ex.id),
+              ).length === 0 && (
+                <ThemedView style={styles.emptyState}>
+                  <ThemedText style={styles.emptyText}>Немає доступних вправ для заміни</ThemedText>
+                </ThemedView>
+              )}
             </ScrollView>
           </ThemedView>
         </ThemedView>
@@ -1255,5 +1633,197 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
+  },
+  exerciseActionsRow: {
+    flexDirection: 'row',
+    marginLeft: 8,
+  },
+  replaceExerciseButton: {
+    padding: 8,
+    marginRight: 4,
+  },
+  startWorkoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  startWorkoutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  workoutModeContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  workoutHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  workoutTitle: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 20,
+  },
+  workoutProgress: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  workoutProgressText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  workoutContent: {
+    flex: 1,
+  },
+  workoutExerciseCard: {
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  workoutExerciseName: {
+    fontSize: 28,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  workoutExerciseCategory: {
+    fontSize: 16,
+    opacity: 0.7,
+    marginBottom: 24,
+  },
+  workoutSetsInfo: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  workoutSetsLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  workoutRepsLabel: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  workoutSetsProgress: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  workoutSetDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    opacity: 0.3,
+    marginHorizontal: 6,
+  },
+  completeSetButton: {
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '100%',
+  },
+  completeSetButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  restTimerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  restTimerText: {
+    fontSize: 24,
+    marginBottom: 24,
+  },
+  restTimerValue: {
+    fontSize: 64,
+    fontWeight: 'bold',
+    marginBottom: 32,
+  },
+  skipRestButton: {
+    padding: 16,
+    borderRadius: 12,
+    minWidth: 150,
+    alignItems: 'center',
+  },
+  skipRestButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  workoutComplete: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  workoutCompleteText: {
+    fontSize: 28,
+    marginTop: 24,
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  finishWorkoutButton: {
+    padding: 18,
+    borderRadius: 12,
+    minWidth: 200,
+    alignItems: 'center',
+  },
+  finishWorkoutButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  startTimerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  startTimerLabel: {
+    fontSize: 32,
+    marginBottom: 40,
+    opacity: 0.7,
+  },
+  startTimerValue: {
+    fontSize: 120,
+    fontWeight: 'bold',
+  },
+  restTimerBar: {
+    padding: 16,
+    borderBottomWidth: 2,
+  },
+  restTimerBarContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  restTimerBarText: {
+    flex: 1,
+    marginLeft: 12,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  skipRestBarButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  skipRestBarButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
