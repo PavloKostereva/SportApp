@@ -55,15 +55,21 @@ export default function ProgressScreen() {
 
       <ThemedView style={styles.statsCard}>
         <ThemedView style={styles.statItem}>
-          <ThemedText style={styles.statValue}>{totalWorkouts}</ThemedText>
+          <ThemedText style={styles.statValue} numberOfLines={1}>
+            {totalWorkouts}
+          </ThemedText>
           <ThemedText style={styles.statLabel}>Тренувань</ThemedText>
         </ThemedView>
         <ThemedView style={styles.statItem}>
-          <ThemedText style={styles.statValue}>{totalDuration}</ThemedText>
+          <ThemedText style={styles.statValue} numberOfLines={1}>
+            {totalDuration}
+          </ThemedText>
           <ThemedText style={styles.statLabel}>Хвилин</ThemedText>
         </ThemedView>
         <ThemedView style={styles.statItem}>
-          <ThemedText style={styles.statValue}>5</ThemedText>
+          <ThemedText style={styles.statValue} numberOfLines={1}>
+            5
+          </ThemedText>
           <ThemedText style={styles.statLabel}>Днів</ThemedText>
         </ThemedView>
       </ThemedView>
@@ -131,11 +137,16 @@ const styles = StyleSheet.create({
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
+    minWidth: 80,
   },
   statValue: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 4,
+    textAlign: 'center',
+    minHeight: 40,
+    lineHeight: 40,
   },
   statLabel: {
     fontSize: 14,

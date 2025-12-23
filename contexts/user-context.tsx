@@ -1,6 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
+export interface WeightEntry {
+  date: string;
+  weight: number;
+}
+
 export interface UserData {
   weight: number | null;
   height: number | null;
@@ -8,6 +13,8 @@ export interface UserData {
   goal: 'lose' | 'gain' | 'maintain' | null;
   workoutTime: number | null;
   hasCompletedOnboarding: boolean;
+  weightHistory: WeightEntry[];
+  name?: string;
 }
 
 interface UserContextType {
@@ -15,6 +22,7 @@ interface UserContextType {
   updateUserData: (data: Partial<UserData>) => Promise<void>;
   completeOnboarding: () => Promise<void>;
   skipOnboarding: () => Promise<void>;
+  addWeightEntry: (weight: number, date?: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -28,6 +36,8 @@ const defaultUserData: UserData = {
   goal: null,
   workoutTime: null,
   hasCompletedOnboarding: false,
+  weightHistory: [],
+  name: undefined,
 };
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -87,12 +97,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
     await saveUserData(currentData);
   };
 
+  const addWeightEntry = async (weight: number, date?: string) => {
+    const entryDate = date || new Date().toISOString().split('T')[0];
+    const newEntry: WeightEntry = { date: entryDate, weight };
+    const updatedHistory = [...(userData.weightHistory || []), newEntry].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+    await updateUserData({ weight, weightHistory: updatedHistory });
+  };
+
   if (isLoading) {
     return null;
   }
 
   return (
-    <UserContext.Provider value={{ userData, updateUserData, completeOnboarding, skipOnboarding }}>
+    <UserContext.Provider
+      value={{ userData, updateUserData, completeOnboarding, skipOnboarding, addWeightEntry }}>
       {children}
     </UserContext.Provider>
   );
