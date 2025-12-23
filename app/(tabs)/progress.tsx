@@ -56,13 +56,13 @@ export default function ProgressScreen() {
       <ThemedView style={styles.statsCard}>
         <ThemedView style={styles.statItem}>
           <ThemedText style={styles.statValue} numberOfLines={1}>
-            {totalWorkouts}
+            {String(totalWorkouts)}
           </ThemedText>
           <ThemedText style={styles.statLabel}>Тренувань</ThemedText>
         </ThemedView>
         <ThemedView style={styles.statItem}>
           <ThemedText style={styles.statValue} numberOfLines={1}>
-            {totalDuration}
+            {String(totalDuration)}
           </ThemedText>
           <ThemedText style={styles.statLabel}>Хвилин</ThemedText>
         </ThemedView>

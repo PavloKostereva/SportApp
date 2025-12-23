@@ -3,10 +3,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { getLanguageName, Language, useLanguage } from '@/contexts/language-context';
 import { useTheme } from '@/contexts/theme-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 
 type SettingItemSwitch = {
   id: string;
@@ -54,10 +55,23 @@ type SettingItemTheme = {
   type: 'theme';
 };
 
-type SettingItem = SettingItemSwitch | SettingItemText | SettingItemAction | SettingItemTheme;
+type SettingItemLanguage = {
+  id: string;
+  label: string;
+  icon: 'globe';
+  type: 'language';
+};
+
+type SettingItem =
+  | SettingItemSwitch
+  | SettingItemText
+  | SettingItemAction
+  | SettingItemTheme
+  | SettingItemLanguage;
 
 export default function SettingsScreen() {
   const { themeMode, setThemeMode, currentTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [metricUnits, setMetricUnits] = useState(true);
@@ -66,7 +80,9 @@ export default function SettingsScreen() {
   const [syncEnabled, setSyncEnabled] = useState(true);
   const [biometricAuth, setBiometricAuth] = useState(false);
   const [autoUpdate, setAutoUpdate] = useState(true);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const iconColor = useThemeColor({}, 'icon');
+  const tintColor = useThemeColor({}, 'tint');
 
   const handleThemeChange = () => {
     if (themeMode === 'auto') {
@@ -80,27 +96,38 @@ export default function SettingsScreen() {
 
   const getThemeLabel = () => {
     if (themeMode === 'auto') {
-      return 'Автоматична';
+      return t('settings.theme.auto');
     } else if (themeMode === 'light') {
-      return 'Світла';
+      return t('settings.theme.light');
     } else {
-      return 'Темна';
+      return t('settings.theme.dark');
     }
+  };
+
+  const handleLanguageChange = async (lang: Language) => {
+    await setLanguage(lang);
+    setShowLanguageModal(false);
   };
 
   const settingsSections: Array<{ title: string; items: SettingItem[] }> = [
     {
-      title: 'Загальні',
+      title: t('settings.general'),
       items: [
         {
           id: 'theme',
-          label: 'Тема',
+          label: t('settings.theme'),
           icon: 'paintbrush.fill',
           type: 'theme',
         },
         {
+          id: 'language',
+          label: t('settings.language'),
+          icon: 'globe',
+          type: 'language',
+        },
+        {
           id: 'notifications',
-          label: 'Сповіщення',
+          label: t('settings.notifications'),
           icon: 'bell.fill',
           value: notificationsEnabled,
           onValueChange: setNotificationsEnabled,
@@ -108,7 +135,7 @@ export default function SettingsScreen() {
         },
         {
           id: 'sound',
-          label: 'Звук',
+          label: t('settings.sound'),
           icon: 'speaker.wave.2.fill',
           value: soundEnabled,
           onValueChange: setSoundEnabled,
@@ -116,18 +143,11 @@ export default function SettingsScreen() {
         },
         {
           id: 'units',
-          label: 'Метричні одиниці',
+          label: t('settings.units'),
           icon: 'ruler.fill',
           value: metricUnits,
           onValueChange: setMetricUnits,
           type: 'switch',
-        },
-        {
-          id: 'language',
-          label: 'Мова',
-          icon: 'globe',
-          value: 'Українська',
-          type: 'text',
         },
       ],
     },
@@ -265,94 +285,176 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#6C7CE7', dark: '#1A237E' }}
-      headerImage={
-        <IconSymbol size={310} color="#FFFFFF" name="gearshape.fill" style={styles.headerImage} />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Налаштування
-        </ThemedText>
-      </ThemedView>
+    <>
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#6C7CE7', dark: '#1A237E' }}
+        headerImage={
+          <IconSymbol size={310} color="#FFFFFF" name="gearshape.fill" style={styles.headerImage} />
+        }>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText
+            type="title"
+            style={{
+              fontFamily: Fonts.rounded,
+            }}>
+            {t('nav.settings')}
+          </ThemedText>
+        </ThemedView>
 
-      <ScrollView style={styles.settingsList}>
-        {settingsSections.map((section, sectionIndex) => (
-          <ThemedView key={sectionIndex} style={styles.section}>
-            <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
-              {section.title}
-            </ThemedText>
-            {section.items.map((item) => {
-              if (item.type === 'theme') {
-                return (
-                  <TouchableOpacity key={item.id} activeOpacity={0.7} onPress={handleThemeChange}>
-                    <ThemedView style={styles.settingItem}>
-                      <ThemedView style={styles.settingLeft}>
-                        <IconSymbol
-                          size={24}
-                          name={item.icon}
-                          color={iconColor}
-                          style={styles.settingIcon}
-                        />
-                        <ThemedText type="defaultSemiBold" style={styles.settingLabel}>
-                          {item.label}
-                        </ThemedText>
-                      </ThemedView>
-                      <ThemedView style={styles.settingRight}>
-                        <ThemedView style={styles.themeContainer}>
-                          <ThemedText style={styles.settingValue}>{getThemeLabel()}</ThemedText>
+        <ScrollView style={styles.settingsList}>
+          {settingsSections.map((section, sectionIndex) => (
+            <ThemedView key={sectionIndex} style={styles.section}>
+              <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
+                {section.title}
+              </ThemedText>
+              {section.items.map((item) => {
+                if (item.type === 'theme') {
+                  return (
+                    <TouchableOpacity key={item.id} activeOpacity={0.7} onPress={handleThemeChange}>
+                      <ThemedView style={styles.settingItem}>
+                        <ThemedView style={styles.settingLeft}>
                           <IconSymbol
-                            size={20}
-                            name="chevron.right"
+                            size={24}
+                            name={item.icon}
                             color={iconColor}
-                            style={styles.chevronIcon}
+                            style={styles.settingIcon}
                           />
+                          <ThemedText type="defaultSemiBold" style={styles.settingLabel}>
+                            {item.label}
+                          </ThemedText>
+                        </ThemedView>
+                        <ThemedView style={styles.settingRight}>
+                          <ThemedView style={styles.themeContainer}>
+                            <ThemedText style={styles.settingValue}>{getThemeLabel()}</ThemedText>
+                            <IconSymbol
+                              size={20}
+                              name="chevron.right"
+                              color={iconColor}
+                              style={styles.chevronIcon}
+                            />
+                          </ThemedView>
                         </ThemedView>
                       </ThemedView>
-                    </ThemedView>
-                  </TouchableOpacity>
-                );
-              }
-              return (
-                <ThemedView key={item.id} style={styles.settingItem}>
-                  <ThemedView style={styles.settingLeft}>
-                    <IconSymbol
-                      size={24}
-                      name={item.icon}
-                      color={iconColor}
-                      style={styles.settingIcon}
-                    />
-                    <ThemedText type="defaultSemiBold" style={styles.settingLabel}>
-                      {item.label}
-                    </ThemedText>
-                  </ThemedView>
-                  <ThemedView style={styles.settingRight}>
-                    {item.type === 'switch' && (
-                      <Switch value={item.value} onValueChange={item.onValueChange} />
-                    )}
-                    {item.type === 'text' && (
-                      <ThemedText style={styles.settingValue}>{item.value}</ThemedText>
-                    )}
-                    {item.type === 'action' && (
+                    </TouchableOpacity>
+                  );
+                }
+                if (item.type === 'language') {
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        setShowLanguageModal(true);
+                      }}>
+                      <ThemedView style={styles.settingItem}>
+                        <ThemedView style={styles.settingLeft}>
+                          <IconSymbol
+                            size={24}
+                            name={item.icon}
+                            color={iconColor}
+                            style={styles.settingIcon}
+                          />
+                          <ThemedText type="defaultSemiBold" style={styles.settingLabel}>
+                            {item.label}
+                          </ThemedText>
+                        </ThemedView>
+                        <ThemedView style={styles.settingRight}>
+                          <ThemedView style={styles.themeContainer}>
+                            <ThemedText style={styles.settingValue}>
+                              {getLanguageName(language)}
+                            </ThemedText>
+                            <IconSymbol
+                              size={20}
+                              name="chevron.right"
+                              color={iconColor}
+                              style={styles.chevronIcon}
+                            />
+                          </ThemedView>
+                        </ThemedView>
+                      </ThemedView>
+                    </TouchableOpacity>
+                  );
+                }
+                return (
+                  <ThemedView key={item.id} style={styles.settingItem}>
+                    <ThemedView style={styles.settingLeft}>
                       <IconSymbol
-                        size={20}
-                        name="chevron.right"
+                        size={24}
+                        name={item.icon}
                         color={iconColor}
-                        style={styles.chevronIcon}
+                        style={styles.settingIcon}
                       />
-                    )}
+                      <ThemedText type="defaultSemiBold" style={styles.settingLabel}>
+                        {item.label}
+                      </ThemedText>
+                    </ThemedView>
+                    <ThemedView style={styles.settingRight}>
+                      {item.type === 'switch' && (
+                        <Switch value={item.value} onValueChange={item.onValueChange} />
+                      )}
+                      {item.type === 'text' && (
+                        <ThemedText style={styles.settingValue}>{item.value}</ThemedText>
+                      )}
+                      {item.type === 'action' && (
+                        <IconSymbol
+                          size={20}
+                          name="chevron.right"
+                          color={iconColor}
+                          style={styles.chevronIcon}
+                        />
+                      )}
+                    </ThemedView>
                   </ThemedView>
-                </ThemedView>
-              );
-            })}
+                );
+              })}
+            </ThemedView>
+          ))}
+        </ScrollView>
+      </ParallaxScrollView>
+
+      <Modal
+        visible={showLanguageModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => {
+          console.log('Modal close requested');
+          setShowLanguageModal(false);
+        }}>
+        <ThemedView style={styles.modalOverlay}>
+          <ThemedView style={[styles.modalContent, { borderWidth: 1 }]}>
+            <ThemedView style={styles.modalHeader}>
+              <ThemedText type="title" style={styles.modalTitle}>
+                {t('settings.language')}
+              </ThemedText>
+              <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
+                <IconSymbol size={24} name="xmark.circle.fill" color={iconColor} />
+              </TouchableOpacity>
+            </ThemedView>
+
+            <ScrollView style={styles.languageList}>
+              {(['uk', 'en', 'pl', 'es'] as Language[]).map((lang) => (
+                <TouchableOpacity
+                  key={lang}
+                  style={[
+                    styles.languageItem,
+                    language === lang && { backgroundColor: tintColor + '20' },
+                  ]}
+                  onPress={() => handleLanguageChange(lang)}>
+                  <ThemedText
+                    type="defaultSemiBold"
+                    style={[styles.languageName, language === lang && { color: tintColor }]}>
+                    {getLanguageName(lang)}
+                  </ThemedText>
+                  {language === lang && (
+                    <IconSymbol size={20} name="checkmark.circle.fill" color={tintColor} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </ThemedView>
-        ))}
-      </ScrollView>
-    </ParallaxScrollView>
+        </ThemedView>
+      </Modal>
+    </>
   );
 }
 
@@ -415,5 +517,40 @@ const styles = StyleSheet.create({
     bottom: -90,
     left: -35,
     position: 'absolute',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+  },
+  languageList: {
+    flex: 1,
+  },
+  languageItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    marginBottom: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  languageName: {
+    fontSize: 16,
   },
 });

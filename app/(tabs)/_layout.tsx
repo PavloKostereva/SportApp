@@ -4,10 +4,12 @@ import React from 'react';
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
+import { useLanguage } from '@/contexts/language-context';
 import { useTheme } from '@/contexts/theme-context';
 
 export default function TabLayout() {
   const { currentTheme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -19,7 +21,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="exercises"
         options={{
-          title: 'Вправи',
+          title: t('nav.exercises'),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="figure.strengthtraining.traditional" color={color} />
           ),
@@ -28,14 +30,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calories"
         options={{
-          title: 'Калорії',
+          title: t('nav.calories'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="flame.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
-          title: 'Прогрес',
+          title: t('nav.progress'),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="chart.line.uptrend.xyaxis" color={color} />
           ),
@@ -44,14 +46,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Профіль',
+          title: t('nav.profile'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Налаштування',
+          title: t('nav.settings'),
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
         }}
       />

@@ -9,8 +9,10 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { ExercisesProvider } from '@/contexts/exercises-context';
+import { LanguageProvider } from '@/contexts/language-context';
 import { ThemeProvider, useTheme } from '@/contexts/theme-context';
 import { UserProvider, useUser } from '@/contexts/user-context';
+import { WorkoutDaysProvider } from '@/contexts/workout-days-context';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -45,11 +47,15 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <UserProvider>
-        <ExercisesProvider>
-          <RootLayoutNav />
-        </ExercisesProvider>
-      </UserProvider>
+      <LanguageProvider>
+        <UserProvider>
+          <ExercisesProvider>
+            <WorkoutDaysProvider>
+              <RootLayoutNav />
+            </WorkoutDaysProvider>
+          </ExercisesProvider>
+        </UserProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
