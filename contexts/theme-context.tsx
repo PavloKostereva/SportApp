@@ -2,7 +2,7 @@ import * as SystemUI from 'expo-system-ui';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
-type ThemeMode = 'light' | 'dark' | 'auto';
+import { ThemeMode } from '@/types';
 
 interface ThemeContextType {
   themeMode: ThemeMode;

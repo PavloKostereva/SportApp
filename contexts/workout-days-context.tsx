@@ -1,15 +1,6 @@
+import { Exercise, WorkoutDay } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { Exercise } from './exercises-context';
-
-export interface WorkoutDay {
-  id: string;
-  dayNumber: number;
-  name: string;
-  exercises: string[]; // Array of exercise IDs
-  completed: boolean;
-  date?: string; // Optional date when workout was completed
-}
 
 interface WorkoutDaysContextType {
   workoutDays: WorkoutDay[];
@@ -45,12 +36,6 @@ export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
 
   const createWorkoutProgram = (): WorkoutDay[] => {
     const program: WorkoutDay[] = [];
-
-    // Програма тренувань на 30 днів
-    // День 1-5: Груди+Трицепс, Спина+Біцепс, Ноги+Прес, Плечі+Руки, Кардіо+Прес
-    // День 6: Відпочинок
-    // День 7: Повний body
-    // Повторюється 4 рази + 2 дні
 
     const workoutTemplates = [
       // День 1: Груди + Трицепс

@@ -1,31 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-
-export interface Exercise {
-  id: string;
-  name: string;
-  category: 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'cardio';
-  sets: number;
-  reps: number;
-  weight?: number;
-  restTime?: number;
-  notes?: string;
-}
-
-export interface ExerciseProgress {
-  exerciseId: string;
-  date: string;
-  completedSets: number;
-  totalSets: number;
-}
+import { Exercise, ExerciseProgress, ExerciseCategory } from '@/types';
 
 interface ExercisesContextType {
   exercises: Exercise[];
   addExercise: (exercise: Omit<Exercise, 'id'>) => Promise<void>;
   updateExercise: (id: string, exercise: Partial<Exercise>) => Promise<void>;
   deleteExercise: (id: string) => Promise<void>;
-  getExercisesByCategory: (category: Exercise['category']) => Exercise[];
-  getCategoryName: (category: Exercise['category']) => string;
+  getExercisesByCategory: (category: ExerciseCategory) => Exercise[];
+  getCategoryName: (category: ExerciseCategory) => string;
 }
 
 const ExercisesContext = createContext<ExercisesContextType | undefined>(undefined);
@@ -131,12 +114,12 @@ export function ExercisesProvider({ children }: { children: ReactNode }) {
     await saveExercises(updated);
   };
 
-  const getExercisesByCategory = (category: Exercise['category']) => {
+  const getExercisesByCategory = (category: ExerciseCategory) => {
     return exercises.filter((ex) => ex.category === category);
   };
 
-  const getCategoryName = (category: Exercise['category']): string => {
-    const names: Record<Exercise['category'], string> = {
+  const getCategoryName = (category: ExerciseCategory): string => {
+    const names: Record<ExerciseCategory, string> = {
       chest: 'Груди',
       back: 'Спина',
       legs: 'Ноги',

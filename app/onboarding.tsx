@@ -10,7 +10,6 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useUser } from '@/contexts/user-context';
 import { router } from 'expo-router';
@@ -20,7 +19,9 @@ export default function OnboardingScreen() {
   const [step, setStep] = useState(1);
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
-  const [lifestyle, setLifestyle] = useState<'sedentary' | 'light' | 'moderate' | 'active' | 'very-active' | null>(null);
+  const [lifestyle, setLifestyle] = useState<
+    'sedentary' | 'light' | 'moderate' | 'active' | 'very-active' | null
+  >(null);
   const [goal, setGoal] = useState<'lose' | 'gain' | 'maintain' | null>(null);
   const [workoutTime, setWorkoutTime] = useState('');
 
@@ -46,7 +47,7 @@ export default function OnboardingScreen() {
         const weightValue = parseFloat(weight);
         const heightValue = parseFloat(height);
         const workoutTimeValue = parseFloat(workoutTime);
-        
+
         console.log('Saving user data:', {
           weight: weightValue,
           height: heightValue,
@@ -54,7 +55,7 @@ export default function OnboardingScreen() {
           goal,
           workoutTime: workoutTimeValue,
         });
-        
+
         await updateUserData({
           weight: weightValue,
           height: heightValue,
@@ -78,7 +79,11 @@ export default function OnboardingScreen() {
     { value: 'light', label: 'Легка', description: 'Легкі вправи 1-3 рази на тиждень' },
     { value: 'moderate', label: 'Помірна', description: 'Помірні вправи 3-5 разів на тиждень' },
     { value: 'active', label: 'Активна', description: 'Важкі вправи 6-7 разів на тиждень' },
-    { value: 'very-active', label: 'Дуже активна', description: 'Дуже важкі вправи, фізична робота' },
+    {
+      value: 'very-active',
+      label: 'Дуже активна',
+      description: 'Дуже важкі вправи, фізична робота',
+    },
   ] as const;
 
   const goalOptions = [
@@ -118,7 +123,10 @@ export default function OnboardingScreen() {
 
         <ThemedView style={styles.progressBar}>
           <ThemedView
-            style={[styles.progressFill, { width: `${(step / 4) * 100}%`, backgroundColor: tintColor }]}
+            style={[
+              styles.progressFill,
+              { width: `${(step / 4) * 100}%`, backgroundColor: tintColor },
+            ]}
           />
         </ThemedView>
 
@@ -181,7 +189,9 @@ export default function OnboardingScreen() {
                   onPress={() => setGoal(option.value)}>
                   <IconSymbol
                     size={32}
-                    name={option.icon as 'arrow.down.circle.fill' | 'arrow.up.circle.fill' | 'target'}
+                    name={
+                      option.icon as 'arrow.down.circle.fill' | 'arrow.up.circle.fill' | 'target'
+                    }
                     color={tintColor}
                   />
                   <ThemedText type="defaultSemiBold" style={styles.optionLabel}>
@@ -338,4 +348,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-

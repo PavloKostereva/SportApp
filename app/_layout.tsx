@@ -20,7 +20,6 @@ export const unstable_settings = {
 
 function RootLayoutNav() {
   const { currentTheme } = useTheme();
-  const { userData } = useUser();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {

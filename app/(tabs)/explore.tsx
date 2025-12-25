@@ -3,9 +3,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
-import { getLanguageName, Language, useLanguage } from '@/contexts/language-context';
+import { getLanguageName, useLanguage } from '@/contexts/language-context';
 import { useTheme } from '@/contexts/theme-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Language } from '@/types';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 

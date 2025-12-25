@@ -7,7 +7,6 @@ export default function Index() {
 
   useEffect(() => {
     if (!userData.hasCompletedOnboarding) {
-      // Redirect will be handled by layout
     }
   }, [userData.hasCompletedOnboarding]);
 
