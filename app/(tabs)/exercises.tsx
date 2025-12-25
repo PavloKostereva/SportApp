@@ -396,7 +396,9 @@ export default function ExercisesScreen() {
           setStartTimer(3);
           setWorkoutStarted(false);
         }}
-        onAddExercise={() => setShowAddExerciseToDayModal(true)}
+        onAddExercise={() => {
+          setShowAddExerciseToDayModal(true);
+        }}
         onCompleteDay={async () => {
           if (selectedDay) {
             await markDayAsCompleted(selectedDay.id);
@@ -437,6 +439,10 @@ export default function ExercisesScreen() {
         onAddExercise={async (exerciseId) => {
           if (selectedDay) {
             await addExerciseToDay(selectedDay.id, exerciseId);
+            const updatedDay = workoutDays.find((day) => day.id === selectedDay.id);
+            if (updatedDay) {
+              setSelectedDay(updatedDay);
+            }
             setShowAddExerciseToDayModal(false);
           }
         }}

@@ -199,7 +199,8 @@ export function DayModal({
                 )}
                 <TouchableOpacity
                   style={[styles.addExerciseToDayButton, { borderColor: tintColor }]}
-                  onPress={onAddExercise}>
+                  onPress={onAddExercise}
+                  activeOpacity={0.7}>
                   <IconSymbol size={20} name="plus.circle.fill" color={tintColor} />
                   <ThemedText style={[styles.addExerciseToDayText, { color: tintColor }]}>
                     Додати вправу

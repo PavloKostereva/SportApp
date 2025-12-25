@@ -26,12 +26,10 @@ export function AddExerciseToDayModal({
   const iconColor = useThemeColor({}, 'icon');
   const tintColor = useThemeColor({}, 'tint');
 
+  if (!day) return null;
+
   return (
-    <Modal
-      visible={visible && day !== null}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <ThemedView style={styles.modalOverlay}>
         <ThemedView style={[styles.modalContent, { borderWidth: 1 }]}>
           <ThemedView style={styles.modalHeader}>
