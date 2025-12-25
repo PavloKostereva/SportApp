@@ -642,8 +642,6 @@ export default function ExercisesScreen() {
             const currentExercise = dayExercises[currentExerciseIndex];
             const isLastExercise = currentExerciseIndex === dayExercises.length - 1;
             const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
-            const isExerciseComplete =
-              currentExercise && currentCompletedSets >= currentExercise.sets;
 
             return (
               <ThemedView style={styles.workoutModeContainer}>

@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "exercises": "Ejercicios",
+    "calories": "Calorías",
+    "progress": "Progreso",
+    "profile": "Perfil",
+    "settings": "Configuración"
+  },
+  "settings": {
+    "general": "General",
+    "theme": "Tema",
+    "language": "Idioma",
+    "themeOptions": {
+      "auto": "Automático",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "notifications": "Notificaciones",
+    "sound": "Sonido",
+    "units": "Unidades",
+    "autoTrack": "Seguimiento automático",
+    "sync": "Sincronizar",
+    "biometric": "Autenticación biométrica",
+    "autoUpdate": "Actualización automática"
+  },
+  "exercises": {
+    "title": "Ejercicios",
+    "add": "Agregar ejercicio",
+    "edit": "Editar ejercicio",
+    "delete": "Eliminar ejercicio",
+    "category": {
+      "all": "Todos",
+      "chest": "Pecho",
+      "back": "Espalda",
+      "legs": "Piernas",
+      "shoulders": "Hombros",
+      "arms": "Brazos",
+      "core": "Core",
+      "cardio": "Cardio"
+    },
+    "sets": "Series",
+    "reps": "Repeticiones",
+    "weight": "Peso",
+    "restTime": "Descanso",
+    "empty": "No hay ejercicios en esta categoría"
+  },
+  "profile": {
+    "title": "Perfil",
+    "weight": "Peso",
+    "height": "Altura",
+    "bmi": "IMC",
+    "goal": "Objetivo",
+    "lifestyle": "Estilo de vida",
+    "workoutTime": "Tiempo de entrenamiento",
+    "weightHistory": "Historial de peso",
+    "addWeight": "Agregar peso",
+    "edit": "Editar perfil",
+    "stats": "Estadísticas",
+    "workouts": "Ejercicios",
+    "sets": "Series",
+    "weightEntries": "Entradas de peso"
+  },
+  "progress": {
+    "title": "Progreso",
+    "workouts": "Entrenamientos",
+    "minutes": "Minutos",
+    "days": "Días",
+    "week": "Semana",
+    "achievements": "Logros"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "close": "Cerrar",
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  }
+}

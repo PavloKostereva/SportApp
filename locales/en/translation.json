@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "exercises": "Exercises",
+    "calories": "Calories",
+    "progress": "Progress",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "settings": {
+    "general": "General",
+    "theme": "Theme",
+    "language": "Language",
+    "themeOptions": {
+      "auto": "Auto",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "notifications": "Notifications",
+    "sound": "Sound",
+    "units": "Units",
+    "autoTrack": "Auto Track",
+    "sync": "Sync",
+    "biometric": "Biometric Auth",
+    "autoUpdate": "Auto Update"
+  },
+  "exercises": {
+    "title": "Exercises",
+    "add": "Add Exercise",
+    "edit": "Edit Exercise",
+    "delete": "Delete Exercise",
+    "category": {
+      "all": "All",
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "cardio": "Cardio"
+    },
+    "sets": "Sets",
+    "reps": "Reps",
+    "weight": "Weight",
+    "restTime": "Rest",
+    "empty": "No exercises in this category"
+  },
+  "profile": {
+    "title": "Profile",
+    "weight": "Weight",
+    "height": "Height",
+    "bmi": "BMI",
+    "goal": "Goal",
+    "lifestyle": "Lifestyle",
+    "workoutTime": "Workout Time",
+    "weightHistory": "Weight History",
+    "addWeight": "Add Weight",
+    "edit": "Edit Profile",
+    "stats": "Statistics",
+    "workouts": "Exercises",
+    "sets": "Sets",
+    "weightEntries": "Weight Entries"
+  },
+  "progress": {
+    "title": "Progress",
+    "workouts": "Workouts",
+    "minutes": "Minutes",
+    "days": "Days",
+    "week": "Week",
+    "achievements": "Achievements"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  }
+}

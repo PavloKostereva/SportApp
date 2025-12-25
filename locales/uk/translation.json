@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "exercises": "Вправи",
+    "calories": "Калорії",
+    "progress": "Прогрес",
+    "profile": "Профіль",
+    "settings": "Налаштування"
+  },
+  "settings": {
+    "general": "Загальні",
+    "theme": "Тема",
+    "language": "Мова",
+    "themeOptions": {
+      "auto": "Автоматична",
+      "light": "Світла",
+      "dark": "Темна"
+    },
+    "notifications": "Сповіщення",
+    "sound": "Звук",
+    "units": "Одиниці виміру",
+    "autoTrack": "Автоматичне відстеження",
+    "sync": "Синхронізація",
+    "biometric": "Біометрична автентифікація",
+    "autoUpdate": "Автооновлення"
+  },
+  "exercises": {
+    "title": "Вправи",
+    "add": "Додати вправу",
+    "edit": "Редагувати вправу",
+    "delete": "Видалити вправу",
+    "category": {
+      "all": "Всі",
+      "chest": "Груди",
+      "back": "Спина",
+      "legs": "Ноги",
+      "shoulders": "Плечі",
+      "arms": "Руки",
+      "core": "Прес",
+      "cardio": "Кардіо"
+    },
+    "sets": "Підходи",
+    "reps": "Повторення",
+    "weight": "Вага",
+    "restTime": "Відпочинок",
+    "empty": "Немає вправ у цій категорії"
+  },
+  "profile": {
+    "title": "Профіль",
+    "weight": "Вага",
+    "height": "Зріст",
+    "bmi": "ІМТ",
+    "goal": "Мета",
+    "lifestyle": "Спосіб життя",
+    "workoutTime": "Час тренувань",
+    "weightHistory": "Історія ваги",
+    "addWeight": "Додати вагу",
+    "edit": "Редагувати профіль",
+    "stats": "Статистика",
+    "workouts": "Вправ",
+    "sets": "Підходів",
+    "weightEntries": "Записів ваги"
+  },
+  "progress": {
+    "title": "Прогрес",
+    "workouts": "Тренувань",
+    "minutes": "Хвилин",
+    "days": "Днів",
+    "week": "Тиждень",
+    "achievements": "Досягнення"
+  },
+  "common": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "add": "Додати",
+    "close": "Закрити",
+    "today": "Сьогодні",
+    "yesterday": "Вчора"
+  }
+}

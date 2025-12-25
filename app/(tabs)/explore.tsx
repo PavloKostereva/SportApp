@@ -97,11 +97,11 @@ export default function SettingsScreen() {
 
   const getThemeLabel = () => {
     if (themeMode === 'auto') {
-      return t('settings.theme.auto');
+      return t('settings.themeOptions.auto');
     } else if (themeMode === 'light') {
-      return t('settings.theme.light');
+      return t('settings.themeOptions.light');
     } else {
-      return t('settings.theme.dark');
+      return t('settings.themeOptions.dark');
     }
   };
 

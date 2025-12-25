@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "exercises": "Ćwiczenia",
+    "calories": "Kalorie",
+    "progress": "Postęp",
+    "profile": "Profil",
+    "settings": "Ustawienia"
+  },
+  "settings": {
+    "general": "Ogólne",
+    "theme": "Motyw",
+    "language": "Język",
+    "themeOptions": {
+      "auto": "Automatyczny",
+      "light": "Jasny",
+      "dark": "Ciemny"
+    },
+    "notifications": "Powiadomienia",
+    "sound": "Dźwięk",
+    "units": "Jednostki",
+    "autoTrack": "Auto śledzenie",
+    "sync": "Synchronizacja",
+    "biometric": "Uwierzytelnianie biometryczne",
+    "autoUpdate": "Auto aktualizacja"
+  },
+  "exercises": {
+    "title": "Ćwiczenia",
+    "add": "Dodaj ćwiczenie",
+    "edit": "Edytuj ćwiczenie",
+    "delete": "Usuń ćwiczenie",
+    "category": {
+      "all": "Wszystkie",
+      "chest": "Klatka",
+      "back": "Plecy",
+      "legs": "Nogi",
+      "shoulders": "Barki",
+      "arms": "Ręce",
+      "core": "Brzuch",
+      "cardio": "Cardio"
+    },
+    "sets": "Serie",
+    "reps": "Powtórzenia",
+    "weight": "Waga",
+    "restTime": "Odpoczynek",
+    "empty": "Brak ćwiczeń w tej kategorii"
+  },
+  "profile": {
+    "title": "Profil",
+    "weight": "Waga",
+    "height": "Wzrost",
+    "bmi": "BMI",
+    "goal": "Cel",
+    "lifestyle": "Styl życia",
+    "workoutTime": "Czas treningu",
+    "weightHistory": "Historia wagi",
+    "addWeight": "Dodaj wagę",
+    "edit": "Edytuj profil",
+    "stats": "Statystyki",
+    "workouts": "Ćwiczeń",
+    "sets": "Serii",
+    "weightEntries": "Wpisów wagi"
+  },
+  "progress": {
+    "title": "Postęp",
+    "workouts": "Treningów",
+    "minutes": "Minut",
+    "days": "Dni",
+    "week": "Tydzień",
+    "achievements": "Osiągnięcia"
+  },
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "close": "Zamknij",
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj"
+  }
+}
