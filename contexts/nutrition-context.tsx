@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { foodProducts } from '@/data/food-products';
 import { DailyNutrition, FoodEntry, FoodProduct, NutritionGoal } from '@/types/nutrition';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { useUser } from './user-context';
 
 interface NutritionContextType {
@@ -297,7 +298,7 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
   const dailyNutrition = getNutritionForDate(today);
 
   if (isLoading) {
-    return null;
+    return <LoadingOverlay visible={true} message="Завантаження харчування..." />;
   }
 
   return (

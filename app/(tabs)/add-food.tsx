@@ -1,18 +1,12 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { useNutrition } from '@/contexts/nutrition-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { FoodProduct } from '@/types/nutrition';
 import { useState } from 'react';
-import {
-  Alert,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
@@ -35,6 +29,7 @@ export default function AddFoodScreen() {
   const [amount, setAmount] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const filteredProducts = searchProducts(searchQuery);
 
@@ -56,25 +51,32 @@ export default function AddFoodScreen() {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    setIsAdding(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
 
-    await addFoodEntry({
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      amount: amountNum,
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      mealType: selectedMeal,
-      date: today,
-    });
+      await addFoodEntry({
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        amount: amountNum,
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        mealType: selectedMeal,
+        date: today,
+      });
 
-    Alert.alert('Успіх', 'Продукт додано!');
-    setSelectedProduct(null);
-    setAmount('');
-    setSearchQuery('');
-    setShowProductModal(false);
+      Alert.alert('Успіх', 'Продукт додано!');
+      setSelectedProduct(null);
+      setAmount('');
+      setSearchQuery('');
+      setShowProductModal(false);
+    } catch (error) {
+      Alert.alert('Помилка', 'Не вдалося додати продукт');
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -154,8 +156,7 @@ export default function AddFoodScreen() {
                       style={[
                         styles.mealTypeButton,
                         {
-                          backgroundColor:
-                            selectedMeal === meal.type ? tintColor : backgroundColor,
+                          backgroundColor: selectedMeal === meal.type ? tintColor : backgroundColor,
                           borderColor: tintColor,
                         },
                       ]}
@@ -193,8 +194,8 @@ export default function AddFoodScreen() {
                 {selectedProduct?.unit === 'g'
                   ? 'грам'
                   : selectedProduct?.unit === 'ml'
-                    ? 'мілілітрів'
-                    : 'штук'}
+                  ? 'мілілітрів'
+                  : 'штук'}
               </ThemedText>
             </ThemedView>
 
@@ -245,14 +246,25 @@ export default function AddFoodScreen() {
             )}
 
             <TouchableOpacity
-              style={[styles.addButton, { backgroundColor: tintColor }]}
+              style={[
+                styles.addButton,
+                { backgroundColor: tintColor },
+                isAdding && { opacity: 0.7 },
+              ]}
               onPress={handleAddFood}
-              activeOpacity={0.8}>
-              <ThemedText style={styles.addButtonText}>Додати</ThemedText>
+              activeOpacity={0.8}
+              disabled={isAdding}>
+              {isAdding ? (
+                <ThemedText style={styles.addButtonText}>Додавання...</ThemedText>
+              ) : (
+                <ThemedText style={styles.addButtonText}>Додати</ThemedText>
+              )}
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
       </Modal>
+
+      <LoadingOverlay visible={isAdding} message="Додавання продукту..." />
     </ThemedView>
   );
 }
@@ -419,4 +431,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

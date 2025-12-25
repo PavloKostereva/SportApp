@@ -11,6 +11,7 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { Fonts } from '@/constants/theme';
 import { useExercises } from '@/contexts/exercises-context';
 import { useWorkoutDays } from '@/contexts/workout-days-context';
@@ -73,6 +74,7 @@ export default function ExercisesScreen() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [completedSets, setCompletedSets] = useState<Record<string, number>>({});
   const [workoutStarted, setWorkoutStarted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [newExercise, setNewExercise] = useState({
     name: '',
     category: 'chest' as ExerciseCategory,
@@ -101,30 +103,38 @@ export default function ExercisesScreen() {
       return;
     }
 
-    await addExercise({
-      name: newExercise.name,
-      category: newExercise.category,
-      sets: parseInt(newExercise.sets),
-      reps: parseInt(newExercise.reps),
-      weight: newExercise.weight ? parseFloat(newExercise.weight) : undefined,
-      restTime: newExercise.restTime ? parseInt(newExercise.restTime) : 60,
-      difficulty: newExercise.difficulty || undefined,
-      location: newExercise.location || undefined,
-      equipment: newExercise.equipment.length > 0 ? newExercise.equipment : undefined,
-    });
+    setIsSaving(true);
+    try {
+      await addExercise({
+        name: newExercise.name,
+        category: newExercise.category,
+        sets: parseInt(newExercise.sets),
+        reps: parseInt(newExercise.reps),
+        weight: newExercise.weight ? parseFloat(newExercise.weight) : undefined,
+        restTime: newExercise.restTime ? parseInt(newExercise.restTime) : 60,
+        difficulty: newExercise.difficulty || undefined,
+        location: newExercise.location || undefined,
+        equipment: newExercise.equipment.length > 0 ? newExercise.equipment : undefined,
+      });
 
-    setNewExercise({
-      name: '',
-      category: 'chest',
-      sets: '3',
-      reps: '12',
-      weight: '',
-      restTime: '60',
-      difficulty: 'beginner',
-      location: 'anywhere',
-      equipment: [],
-    });
-    setShowAddModal(false);
+      setNewExercise({
+        name: '',
+        category: 'chest',
+        sets: '3',
+        reps: '12',
+        weight: '',
+        restTime: '60',
+        difficulty: 'beginner',
+        location: 'anywhere',
+        equipment: [],
+      });
+      setShowAddModal(false);
+      setEditingExercise(null);
+    } catch (error) {
+      Alert.alert('Помилка', 'Не вдалося додати вправу');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEditExercise = async () => {
@@ -132,30 +142,38 @@ export default function ExercisesScreen() {
       return;
     }
 
-    await updateExercise(editingExercise.id, {
-      name: newExercise.name,
-      category: newExercise.category,
-      sets: parseInt(newExercise.sets),
-      reps: parseInt(newExercise.reps),
-      weight: newExercise.weight ? parseFloat(newExercise.weight) : undefined,
-      restTime: newExercise.restTime ? parseInt(newExercise.restTime) : 60,
-      difficulty: newExercise.difficulty || undefined,
-      location: newExercise.location || undefined,
-      equipment: newExercise.equipment.length > 0 ? newExercise.equipment : undefined,
-    });
+    setIsSaving(true);
+    try {
+      await updateExercise(editingExercise.id, {
+        name: newExercise.name,
+        category: newExercise.category,
+        sets: parseInt(newExercise.sets),
+        reps: parseInt(newExercise.reps),
+        weight: newExercise.weight ? parseFloat(newExercise.weight) : undefined,
+        restTime: newExercise.restTime ? parseInt(newExercise.restTime) : 60,
+        difficulty: newExercise.difficulty || undefined,
+        location: newExercise.location || undefined,
+        equipment: newExercise.equipment.length > 0 ? newExercise.equipment : undefined,
+      });
 
-    setEditingExercise(null);
-    setNewExercise({
-      name: '',
-      category: 'chest',
-      sets: '3',
-      reps: '12',
-      weight: '',
-      restTime: '60',
-      difficulty: 'beginner',
-      location: 'anywhere',
-      equipment: [],
-    });
+      setEditingExercise(null);
+      setNewExercise({
+        name: '',
+        category: 'chest',
+        sets: '3',
+        reps: '12',
+        weight: '',
+        restTime: '60',
+        difficulty: 'beginner',
+        location: 'anywhere',
+        equipment: [],
+      });
+      setShowAddModal(false);
+    } catch (error) {
+      Alert.alert('Помилка', 'Не вдалося оновити вправу');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteExercise = (exercise: Exercise) => {
@@ -644,6 +662,8 @@ export default function ExercisesScreen() {
         onFormDataChange={(data) => setNewExercise({ ...newExercise, ...data })}
         onSubmit={editingExercise ? handleEditExercise : handleAddExercise}
       />
+
+      <LoadingOverlay visible={isSaving} message="Збереження..." />
     </>
   );
 }

@@ -1,3 +1,4 @@
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { Exercise, WorkoutDay } from '@/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
@@ -260,7 +261,7 @@ export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
   };
 
   if (isLoading) {
-    return null;
+    return <LoadingOverlay visible={true} message="Завантаження тренувань..." />;
   }
 
   return (
