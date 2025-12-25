@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { ExercisesProvider } from '@/contexts/exercises-context';
+import { NutritionProvider } from '@/contexts/nutrition-context';
 import { ThemeProvider, useTheme } from '@/contexts/theme-context';
 import { UserProvider } from '@/contexts/user-context';
 import { WorkoutDaysProvider } from '@/contexts/workout-days-context';
@@ -47,11 +48,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <UserProvider>
-        <ExercisesProvider>
-          <WorkoutDaysProvider>
-            <RootLayoutNav />
-          </WorkoutDaysProvider>
-        </ExercisesProvider>
+        <NutritionProvider>
+          <ExercisesProvider>
+            <WorkoutDaysProvider>
+              <RootLayoutNav />
+            </WorkoutDaysProvider>
+          </ExercisesProvider>
+        </NutritionProvider>
       </UserProvider>
     </ThemeProvider>
   );
