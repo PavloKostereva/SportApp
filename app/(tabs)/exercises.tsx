@@ -215,23 +215,32 @@ export default function ExercisesScreen() {
   }, [startTimer]);
 
   useEffect(() => {
-    if (restTimer !== null && restTimer > 0) {
+    if (restTimer !== null && restTimer > 0 && selectedDay) {
       restTimerIntervalRef.current = setInterval(() => {
         setRestTimer((prev) => {
           if (prev === null || prev <= 1) {
             if (restTimerIntervalRef.current) {
               clearInterval(restTimerIntervalRef.current);
             }
-            if (selectedDay) {
-              const dayExercises = getDayExercises(selectedDay.id, exercises);
-              const currentExercise = dayExercises[currentExerciseIndex];
-              const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
+            const dayExercises = getDayExercises(selectedDay.id, exercises);
+            const currentExercise = dayExercises[currentExerciseIndex];
+            if (!currentExercise) return null;
 
-              if (currentExercise && currentCompletedSets >= currentExercise.sets) {
-                if (currentExerciseIndex < dayExercises.length - 1) {
-                  setCurrentExerciseIndex((prev) => prev + 1);
-                  setCompletedSets((prev) => ({ ...prev, [currentExercise.id]: 0 }));
-                }
+            const currentCompletedSets = completedSets[currentExercise.id] || 0;
+
+            if (currentCompletedSets >= currentExercise.sets) {
+              if (currentExerciseIndex < dayExercises.length - 1) {
+                const nextExerciseIndex = currentExerciseIndex + 1;
+                setCurrentExerciseIndex(nextExerciseIndex);
+                setCompletedSets((prev) => {
+                  const newSets = { ...prev };
+                  newSets[currentExercise.id] = 0;
+                  const nextExercise = dayExercises[nextExerciseIndex];
+                  if (nextExercise) {
+                    newSets[nextExercise.id] = 0;
+                  }
+                  return newSets;
+                });
               }
             }
             return null;
@@ -455,14 +464,25 @@ export default function ExercisesScreen() {
           if (!selectedDay) return;
           const dayExercises = getDayExercises(selectedDay.id, exercises);
           const currentExercise = dayExercises[currentExerciseIndex];
-          const currentCompletedSets = completedSets[currentExercise?.id || ''] || 0;
+          if (!currentExercise) return;
+
+          const currentCompletedSets = completedSets[currentExercise.id] || 0;
 
           setRestTimer(null);
 
-          if (currentExercise && currentCompletedSets >= currentExercise.sets) {
+          if (currentCompletedSets >= currentExercise.sets) {
             if (currentExerciseIndex < dayExercises.length - 1) {
-              setCurrentExerciseIndex((prev) => prev + 1);
-              setCompletedSets((prev) => ({ ...prev, [currentExercise.id]: 0 }));
+              const nextExerciseIndex = currentExerciseIndex + 1;
+              setCurrentExerciseIndex(nextExerciseIndex);
+              setCompletedSets((prev) => {
+                const newSets = { ...prev };
+                newSets[currentExercise.id] = 0;
+                const nextExercise = dayExercises[nextExerciseIndex];
+                if (nextExercise) {
+                  newSets[nextExercise.id] = 0;
+                }
+                return newSets;
+              });
             }
           }
         }}
@@ -470,8 +490,35 @@ export default function ExercisesScreen() {
           if (!selectedDay) return;
           const dayExercises = getDayExercises(selectedDay.id, exercises);
           const currentExercise = dayExercises[currentExerciseIndex];
+          if (!currentExercise) return;
+
           const currentCompletedSets = completedSets[exerciseId] || 0;
           const isLastExercise = currentExerciseIndex === dayExercises.length - 1;
+
+          if (currentCompletedSets >= currentExercise.sets) {
+            if (isLastExercise) {
+              Alert.alert('Вітаємо!', 'Ви завершили всі вправи!', [
+                {
+                  text: 'Завершити тренування',
+                  onPress: async () => {
+                    await markDayAsCompleted(selectedDay.id);
+                    setShowWorkoutMode(false);
+                    setShowDayModal(false);
+                    setSelectedDay(null);
+                    setRestTimer(null);
+                    setStartTimer(null);
+                    setCurrentExerciseIndex(0);
+                    setCompletedSets({});
+                    setWorkoutStarted(false);
+                  },
+                },
+              ]);
+            } else {
+              const restTime = currentExercise.restTime || 60;
+              setRestTimer(restTime);
+            }
+            return;
+          }
 
           const newCompletedSets = {
             ...completedSets,

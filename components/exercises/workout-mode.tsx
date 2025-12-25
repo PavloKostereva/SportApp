@@ -152,7 +152,8 @@ export function WorkoutMode({
 
                 <ThemedView style={styles.workoutSetsInfo}>
                   <ThemedText style={styles.workoutSetsLabel}>
-                    Підхід {currentCompletedSets + 1} з {currentExercise.sets}
+                    Підхід {Math.min(currentCompletedSets + 1, currentExercise.sets)} з{' '}
+                    {currentExercise.sets}
                   </ThemedText>
                   <ThemedText style={styles.workoutRepsLabel}>
                     {currentExercise.reps} повторень
