@@ -38,6 +38,7 @@ const MAPPING = {
   'questionmark.circle.fill': 'help',
   'envelope.fill': 'email',
   'lock.shield.fill': 'lock',
+  'lock.fill': 'lock',
   'gearshape.fill': 'settings',
   target: 'gps-fixed',
   'heart.fill': 'favorite',

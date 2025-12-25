@@ -16,48 +16,159 @@ const ExercisesContext = createContext<ExercisesContextType | undefined>(undefin
 const EXERCISES_KEY = 'exercises_data';
 
 const defaultExercises: Exercise[] = [
-  // Груди
   { id: '1', name: 'Жим лежачи', category: 'chest', sets: 4, reps: 10, weight: 60, restTime: 90 },
-  { id: '2', name: 'Жим лежачи на нахилі', category: 'chest', sets: 3, reps: 12, weight: 50, restTime: 90 },
-  { id: '3', name: 'Розведення гантелей', category: 'chest', sets: 3, reps: 15, weight: 12, restTime: 60 },
+  {
+    id: '2',
+    name: 'Жим лежачи на нахилі',
+    category: 'chest',
+    sets: 3,
+    reps: 12,
+    weight: 50,
+    restTime: 90,
+  },
+  {
+    id: '3',
+    name: 'Розведення гантелей',
+    category: 'chest',
+    sets: 3,
+    reps: 15,
+    weight: 12,
+    restTime: 60,
+  },
   { id: '4', name: 'Віджимання від підлоги', category: 'chest', sets: 3, reps: 15, restTime: 60 },
   { id: '5', name: 'Віджимання на брусах', category: 'chest', sets: 3, reps: 12, restTime: 60 },
-  
+
   // Спина
   { id: '6', name: 'Станова тяга', category: 'back', sets: 3, reps: 8, weight: 80, restTime: 120 },
   { id: '7', name: 'Підтягування', category: 'back', sets: 3, reps: 12, restTime: 60 },
-  { id: '8', name: 'Тяга штанги в нахилі', category: 'back', sets: 3, reps: 10, weight: 50, restTime: 90 },
-  { id: '9', name: 'Тяга верхнього блоку', category: 'back', sets: 3, reps: 12, weight: 40, restTime: 60 },
-  { id: '10', name: 'Тяга гантелі однією рукою', category: 'back', sets: 3, reps: 12, weight: 20, restTime: 60 },
-  
+  {
+    id: '8',
+    name: 'Тяга штанги в нахилі',
+    category: 'back',
+    sets: 3,
+    reps: 10,
+    weight: 50,
+    restTime: 90,
+  },
+  {
+    id: '9',
+    name: 'Тяга верхнього блоку',
+    category: 'back',
+    sets: 3,
+    reps: 12,
+    weight: 40,
+    restTime: 60,
+  },
+  {
+    id: '10',
+    name: 'Тяга гантелі однією рукою',
+    category: 'back',
+    sets: 3,
+    reps: 12,
+    weight: 20,
+    restTime: 60,
+  },
+
   // Ноги
   { id: '11', name: 'Присідання', category: 'legs', sets: 4, reps: 12, restTime: 90 },
   { id: '12', name: 'Випади', category: 'legs', sets: 3, reps: 12, restTime: 60 },
   { id: '13', name: 'Жим ногами', category: 'legs', sets: 3, reps: 15, weight: 100, restTime: 90 },
-  { id: '14', name: 'Розгинання ніг', category: 'legs', sets: 3, reps: 15, weight: 30, restTime: 60 },
+  {
+    id: '14',
+    name: 'Розгинання ніг',
+    category: 'legs',
+    sets: 3,
+    reps: 15,
+    weight: 30,
+    restTime: 60,
+  },
   { id: '15', name: 'Згинання ніг', category: 'legs', sets: 3, reps: 15, weight: 30, restTime: 60 },
-  { id: '16', name: 'Підйоми на носки', category: 'legs', sets: 3, reps: 20, weight: 40, restTime: 45 },
-  
+  {
+    id: '16',
+    name: 'Підйоми на носки',
+    category: 'legs',
+    sets: 3,
+    reps: 20,
+    weight: 40,
+    restTime: 45,
+  },
+
   // Плечі
-  { id: '17', name: 'Жим стоячи', category: 'shoulders', sets: 3, reps: 10, weight: 20, restTime: 60 },
-  { id: '18', name: 'Розведення гантелей в сторони', category: 'shoulders', sets: 3, reps: 15, weight: 8, restTime: 60 },
-  { id: '19', name: 'Жим Арнольда', category: 'shoulders', sets: 3, reps: 12, weight: 15, restTime: 60 },
-  { id: '20', name: 'Підйом гантелей перед собою', category: 'shoulders', sets: 3, reps: 12, weight: 10, restTime: 60 },
-  
+  {
+    id: '17',
+    name: 'Жим стоячи',
+    category: 'shoulders',
+    sets: 3,
+    reps: 10,
+    weight: 20,
+    restTime: 60,
+  },
+  {
+    id: '18',
+    name: 'Розведення гантелей в сторони',
+    category: 'shoulders',
+    sets: 3,
+    reps: 15,
+    weight: 8,
+    restTime: 60,
+  },
+  {
+    id: '19',
+    name: 'Жим Арнольда',
+    category: 'shoulders',
+    sets: 3,
+    reps: 12,
+    weight: 15,
+    restTime: 60,
+  },
+  {
+    id: '20',
+    name: 'Підйом гантелей перед собою',
+    category: 'shoulders',
+    sets: 3,
+    reps: 12,
+    weight: 10,
+    restTime: 60,
+  },
+
   // Руки
-  { id: '21', name: 'Біцепс з гантелями', category: 'arms', sets: 3, reps: 12, weight: 10, restTime: 45 },
+  {
+    id: '21',
+    name: 'Біцепс з гантелями',
+    category: 'arms',
+    sets: 3,
+    reps: 12,
+    weight: 10,
+    restTime: 45,
+  },
   { id: '22', name: 'Молоток', category: 'arms', sets: 3, reps: 12, weight: 10, restTime: 45 },
-  { id: '23', name: 'Французький жим', category: 'arms', sets: 3, reps: 12, weight: 15, restTime: 60 },
+  {
+    id: '23',
+    name: 'Французький жим',
+    category: 'arms',
+    sets: 3,
+    reps: 12,
+    weight: 15,
+    restTime: 60,
+  },
   { id: '24', name: 'Віджимання для трицепса', category: 'arms', sets: 3, reps: 12, restTime: 60 },
-  { id: '25', name: 'Підйом на біцепс зі штангою', category: 'arms', sets: 3, reps: 10, weight: 25, restTime: 60 },
-  
+  {
+    id: '25',
+    name: 'Підйом на біцепс зі штангою',
+    category: 'arms',
+    sets: 3,
+    reps: 10,
+    weight: 25,
+    restTime: 60,
+  },
+
   // Прес
   { id: '26', name: 'Планка', category: 'core', sets: 3, reps: 60, restTime: 30 },
   { id: '27', name: 'Скручування', category: 'core', sets: 3, reps: 20, restTime: 45 },
   { id: '28', name: 'Підйоми ніг', category: 'core', sets: 3, reps: 15, restTime: 45 },
   { id: '29', name: 'Російські скручування', category: 'core', sets: 3, reps: 20, restTime: 45 },
   { id: '30', name: 'Велосипед', category: 'core', sets: 3, reps: 20, restTime: 45 },
-  
+
   // Кардіо
   { id: '31', name: 'Біг на місці', category: 'cardio', sets: 1, reps: 20, restTime: 0 },
   { id: '32', name: 'Стрибки', category: 'cardio', sets: 3, reps: 30, restTime: 30 },
@@ -157,4 +268,3 @@ export function useExercises() {
   }
   return context;
 }
-

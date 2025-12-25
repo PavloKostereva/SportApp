@@ -266,6 +266,22 @@ export const styles = StyleSheet.create({
     opacity: 0.7,
     borderColor: '#4CAF50',
   },
+  dayCardLocked: {
+    opacity: 0.5,
+    borderStyle: 'dashed',
+  },
+  dayNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  dayNameLocked: {
+    opacity: 0.6,
+  },
+  dayExercisesCountLocked: {
+    opacity: 0.5,
+    fontStyle: 'italic',
+  },
   dayHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

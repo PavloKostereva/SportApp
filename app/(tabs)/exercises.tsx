@@ -265,25 +265,53 @@ export default function ExercisesScreen() {
           ) : (
             workoutDays.map((day) => {
               const dayExercises = getDayExercises(day.id, exercises);
+              const isLocked = !day.unlocked;
               return (
                 <TouchableOpacity
                   key={day.id}
-                  activeOpacity={0.7}
+                  activeOpacity={isLocked ? 1 : 0.7}
+                  disabled={isLocked}
                   onPress={() => {
-                    setSelectedDay(day);
-                    setShowDayModal(true);
+                    if (isLocked) {
+                      Alert.alert(
+                        'День заблоковано',
+                        `Завершіть день ${day.dayNumber - 1}, щоб розблокувати цей день.`,
+                        [{ text: 'ОК' }],
+                      );
+                    } else {
+                      setSelectedDay(day);
+                      setShowDayModal(true);
+                    }
                   }}>
-                  <ThemedView style={[styles.dayCard, day.completed && styles.dayCardCompleted]}>
+                  <ThemedView
+                    style={[
+                      styles.dayCard,
+                      day.completed && styles.dayCardCompleted,
+                      isLocked && styles.dayCardLocked,
+                    ]}>
                     <ThemedView style={styles.dayHeader}>
                       <ThemedView style={styles.dayInfo}>
-                        <ThemedText type="defaultSemiBold" style={styles.dayName}>
-                          {day.name}
-                        </ThemedText>
-                        <ThemedText style={styles.dayExercisesCount}>
-                          {dayExercises.length} {dayExercises.length === 1 ? 'вправа' : 'вправ'}
+                        <ThemedView style={styles.dayNameRow}>
+                          <ThemedText
+                            type="defaultSemiBold"
+                            style={[styles.dayName, isLocked && styles.dayNameLocked]}>
+                            {day.name}
+                          </ThemedText>
+                          {isLocked && <IconSymbol size={20} name="lock.fill" color={iconColor} />}
+                        </ThemedView>
+                        <ThemedText
+                          style={[
+                            styles.dayExercisesCount,
+                            isLocked && styles.dayExercisesCountLocked,
+                          ]}>
+                          {isLocked
+                            ? 'Заблоковано'
+                            : `${dayExercises.length} ${
+                                dayExercises.length === 1 ? 'вправа' : 'вправ'
+                              }`}
                         </ThemedText>
                       </ThemedView>
-                      {day.completed && (
+                      {day.completed && !isLocked && (
                         <IconSymbol size={24} name="checkmark.circle.fill" color="#4CAF50" />
                       )}
                     </ThemedView>
@@ -313,7 +341,7 @@ export default function ExercisesScreen() {
 
       {/* Модальне вікно перегляду дня */}
       <Modal
-        visible={showDayModal && selectedDay !== null}
+        visible={showDayModal && selectedDay !== null && selectedDay.unlocked}
         animationType="slide"
         transparent={true}
         onRequestClose={() => {
@@ -322,7 +350,7 @@ export default function ExercisesScreen() {
         }}>
         <ThemedView style={styles.modalOverlay}>
           <ThemedView style={[styles.modalContent, { borderWidth: 1 }]}>
-            {selectedDay && (
+            {selectedDay && selectedDay.unlocked && (
               <>
                 <ThemedView style={styles.modalHeader}>
                   <ThemedView style={styles.dayModalHeader}>

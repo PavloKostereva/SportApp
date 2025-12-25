@@ -24,6 +24,7 @@ const defaultWorkoutDays: WorkoutDay[] = Array.from({ length: 30 }, (_, i) => ({
   name: `День ${i + 1}`,
   exercises: [],
   completed: false,
+  unlocked: i === 0,
 }));
 
 export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
@@ -37,45 +38,79 @@ export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
   const createWorkoutProgram = (): WorkoutDay[] => {
     const program: WorkoutDay[] = [];
 
-    const workoutTemplates = [
-      // День 1: Груди + Трицепс
+    const workoutProgram = [
+      // Тиждень 1 - Базові тренування
       { name: 'День 1: Груди + Трицепс', exercises: ['1', '2', '3', '23', '24'] },
-      // День 2: Спина + Біцепс
       { name: 'День 2: Спина + Біцепс', exercises: ['6', '7', '8', '21', '25'] },
-      // День 3: Ноги + Прес
       { name: 'День 3: Ноги + Прес', exercises: ['11', '12', '13', '26', '27'] },
-      // День 4: Плечі + Руки
       { name: 'День 4: Плечі + Руки', exercises: ['17', '18', '19', '22', '24'] },
-      // День 5: Кардіо + Прес
       { name: 'День 5: Кардіо + Прес', exercises: ['31', '32', '28', '29'] },
-      // День 6: Відпочинок
       { name: 'День 6: Відпочинок', exercises: [] },
-      // День 7: Повний body
       { name: 'День 7: Повний body', exercises: ['1', '6', '11', '17', '26', '31'] },
+
+      // Тиждень 2 - Збільшення інтенсивності
+      { name: 'День 8: Груди + Трицепс', exercises: ['1', '2', '4', '23', '24'] },
+      { name: 'День 9: Спина + Біцепс', exercises: ['6', '8', '9', '21', '25'] },
+      { name: 'День 10: Ноги + Прес', exercises: ['11', '12', '14', '26', '28'] },
+      { name: 'День 11: Плечі + Руки', exercises: ['17', '18', '20', '22', '24'] },
+      { name: 'День 12: Кардіо + Прес', exercises: ['31', '32', '33', '27', '29'] },
+      { name: 'День 13: Відпочинок', exercises: [] },
+      { name: 'День 14: Повний body', exercises: ['2', '7', '12', '18', '26', '32'] },
+
+      // Тиждень 3 - Різноманітність
+      { name: 'День 15: Груди + Трицепс', exercises: ['1', '3', '5', '23', '24'] },
+      { name: 'День 16: Спина + Біцепс', exercises: ['6', '7', '10', '21', '25'] },
+      { name: 'День 17: Ноги + Прес', exercises: ['11', '13', '15', '26', '30'] },
+      { name: 'День 18: Плечі + Руки', exercises: ['17', '19', '20', '22', '24'] },
+      { name: 'День 19: Кардіо + Прес', exercises: ['31', '33', '27', '28', '29'] },
+      { name: 'День 20: Відпочинок', exercises: [] },
+      { name: 'День 21: Повний body', exercises: ['1', '6', '11', '17', '26', '31'] },
+
+      // Тиждень 4 - Підвищена складність
+      { name: 'День 22: Груди + Трицепс', exercises: ['1', '2', '4', '5', '23', '24'] },
+      { name: 'День 23: Спина + Біцепс', exercises: ['6', '8', '9', '10', '21', '25'] },
+      { name: 'День 24: Ноги + Прес', exercises: ['11', '12', '13', '14', '26', '27'] },
+      { name: 'День 25: Плечі + Руки', exercises: ['17', '18', '19', '20', '22', '24'] },
+      { name: 'День 26: Кардіо + Прес', exercises: ['31', '32', '33', '28', '29', '30'] },
+      { name: 'День 27: Відпочинок', exercises: [] },
+      { name: 'День 28: Повний body', exercises: ['1', '6', '11', '17', '26', '31', '32'] },
+
+      // Тиждень 5 - Фінальний спринт
+      { name: 'День 29: Груди + Трицепс', exercises: ['1', '2', '3', '4', '23', '24'] },
+      { name: 'День 30: Фінальне тренування', exercises: ['1', '6', '11', '17', '21', '26', '31'] },
     ];
 
     for (let i = 0; i < 30; i++) {
-      const templateIndex = i % 7;
-      const template = workoutTemplates[templateIndex];
-      const weekNumber = Math.floor(i / 7) + 1;
-
+      const dayData = workoutProgram[i];
       program.push({
         id: String(i + 1),
         dayNumber: i + 1,
-        name: template.name,
-        exercises: [...template.exercises],
+        name: dayData.name,
+        exercises: [...dayData.exercises],
         completed: false,
+        unlocked: i === 0, // Тільки день 1 розблокований спочатку
       });
     }
 
     return program;
   };
 
+  const calculateUnlockedDays = (days: WorkoutDay[]): WorkoutDay[] => {
+    return days.map((day, index) => {
+      if (index === 0) {
+        return { ...day, unlocked: true };
+      }
+      const previousDay = days[index - 1];
+      const isUnlocked = previousDay.completed || day.unlocked;
+      return { ...day, unlocked: isUnlocked };
+    });
+  };
+
   const loadWorkoutDays = async () => {
     try {
       const stored = await AsyncStorage.getItem(WORKOUT_DAYS_KEY);
       if (stored) {
-        const loadedDays = JSON.parse(stored);
+        const loadedDays: WorkoutDay[] = JSON.parse(stored);
         // Перевіряємо, чи є вправи в днях
         const hasExercises = loadedDays.some((d: WorkoutDay) => d.exercises.length > 0);
 
@@ -95,20 +130,23 @@ export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
                   ...day,
                   completed: existing.completed,
                   date: existing.date,
-                  // Зберігаємо вправи, якщо вони вже були додані користувачем
+                  unlocked: existing.unlocked !== undefined ? existing.unlocked : day.unlocked,
                   exercises: existing.exercises.length > 0 ? existing.exercises : day.exercises,
                 };
               }
               return day;
             });
-            await saveWorkoutDays(updatedProgram);
-            setWorkoutDays(updatedProgram);
+            const withUnlocked = calculateUnlockedDays(updatedProgram);
+            await saveWorkoutDays(withUnlocked);
+            setWorkoutDays(withUnlocked);
           } else {
             await saveWorkoutDays(program);
             setWorkoutDays(program);
           }
         } else {
-          setWorkoutDays(loadedDays);
+          const withUnlocked = calculateUnlockedDays(loadedDays);
+          await saveWorkoutDays(withUnlocked);
+          setWorkoutDays(withUnlocked);
         }
       } else {
         const program = createWorkoutProgram();
@@ -190,7 +228,21 @@ export function WorkoutDaysProvider({ children }: { children: ReactNode }) {
       }
       return day;
     });
-    await saveWorkoutDays(updated);
+
+    // Розблоковуємо наступний день
+    const completedDay = updated.find((d) => d.id === dayId);
+    if (completedDay) {
+      const nextDayNumber = completedDay.dayNumber + 1;
+      const finalUpdated = updated.map((day) => {
+        if (day.dayNumber === nextDayNumber) {
+          return { ...day, unlocked: true };
+        }
+        return day;
+      });
+      await saveWorkoutDays(finalUpdated);
+    } else {
+      await saveWorkoutDays(updated);
+    }
   };
 
   const unmarkDayAsCompleted = async (dayId: string) => {
