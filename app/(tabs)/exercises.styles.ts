@@ -8,8 +8,67 @@ export const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    marginLeft: 8,
+  },
   addButton: {
     padding: 8,
+  },
+  filterButton: {
+    padding: 8,
+  },
+  filtersContainer: {
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  filtersTitle: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  filterSection: {
+    marginBottom: 16,
+  },
+  filterLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+    opacity: 0.7,
+  },
+  filterRow: {
+    flexDirection: 'row',
+  },
+  filterGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginRight: -8,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    minWidth: 80,
+    alignItems: 'center',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  filterChipText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  clearFiltersButton: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  clearFiltersText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   categoriesScroll: {
     marginBottom: 16,
@@ -243,10 +302,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  headerButtons: {
-    flexDirection: 'row',
-    marginLeft: 8,
-  },
   sectionTitle: {
     fontSize: 18,
     marginBottom: 12,
@@ -281,6 +336,21 @@ export const styles = StyleSheet.create({
   dayExercisesCountLocked: {
     opacity: 0.5,
     fontStyle: 'italic',
+  },
+  dayTags: {
+    flexDirection: 'row',
+    marginTop: 8,
+    gap: 8,
+  },
+  dayTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+  dayTagText: {
+    fontSize: 11,
+    opacity: 0.7,
   },
   dayHeader: {
     flexDirection: 'row',
@@ -466,6 +536,7 @@ export const styles = StyleSheet.create({
   workoutModeContainer: {
     flex: 1,
     padding: 20,
+    paddingTop: 60,
   },
   workoutHeader: {
     flexDirection: 'row',

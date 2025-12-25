@@ -5,6 +5,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useExercises } from '@/contexts/exercises-context';
 import { useUser } from '@/contexts/user-context';
+import { useWorkoutDays } from '@/contexts/workout-days-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -17,6 +18,7 @@ export default function ProfileScreen() {
   const borderColor = useThemeColor({}, 'tabIconDefault');
   const { userData, updateUserData, addWeightEntry } = useUser();
   const { exercises } = useExercises();
+  const { workoutDays } = useWorkoutDays();
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddWeightModal, setShowAddWeightModal] = useState(false);
@@ -116,8 +118,9 @@ export default function ProfileScreen() {
     setShowAddWeightModal(false);
   };
 
-  const totalWorkouts = exercises.length;
-  const totalExercises = exercises.reduce((sum, ex) => sum + ex.sets, 0);
+  const totalExercises = exercises.length;
+  const totalSets = exercises.reduce((sum, ex) => sum + ex.sets, 0);
+  const completedWorkouts = workoutDays.filter((day) => day.completed).length;
 
   return (
     <>
@@ -227,15 +230,21 @@ export default function ProfileScreen() {
           </ThemedText>
           <ThemedView style={styles.statsGrid}>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={styles.statValue}>{totalWorkouts}</ThemedText>
+              <ThemedText type="title" style={styles.statValue}>
+                {String(totalExercises)}
+              </ThemedText>
               <ThemedText style={styles.statLabel}>Вправ</ThemedText>
             </ThemedView>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={styles.statValue}>{totalExercises}</ThemedText>
+              <ThemedText type="title" style={styles.statValue}>
+                {String(totalSets)}
+              </ThemedText>
               <ThemedText style={styles.statLabel}>Підходів</ThemedText>
             </ThemedView>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={styles.statValue}>{weightHistory.length}</ThemedText>
+              <ThemedText type="title" style={styles.statValue}>
+                {String(weightHistory.length)}
+              </ThemedText>
               <ThemedText style={styles.statLabel}>Записів ваги</ThemedText>
             </ThemedView>
           </ThemedView>
@@ -555,13 +564,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   statLabel: {
-    fontSize: 12,
-    opacity: 0.7,
+    fontSize: 13,
+    opacity: 0.6,
+    textAlign: 'center',
   },
   sectionHeader: {
     flexDirection: 'row',
